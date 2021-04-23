@@ -20,8 +20,10 @@ As of v1.8, Flow Launcher should take care of the installation of Python for you
 
 ### Installing
 
-This plugin has not been officially added to the Flow Launcher Plugins yet!
-However you can manually add it.
+The Plugin has been officially added to the supported list of plugins. 
+Use `pm install RollDice` to install.
+
+However you can also manually add it.
 
 
 ### Manual
