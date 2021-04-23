@@ -55,10 +55,13 @@ You can concatenate as many rolls as you want via the following operators: `+`, 
 
 > Don't forget the spaces between the operators and the dices or numbers!
 
-The dice rolls will be replaced by the resulting sum of the flow before the total evaluation of the evaluation.
-Thus `6 * 1d20` will become six times the result of the d20 roll. 
-To roll a d20 six times simply write `6d20` instead.
+The dice rolls will be replaced with the resulting sums before the total is evaluated.
+Thus `6 * 1d20` will become six times the result of the d20 roll like `6 * 17` which results in `102`.
+To roll a d20 six times simply use `6d20` instead.
 
+Rolling the same dices multiple times will only show the first instance.
+Example: `roll 2d8 + 5 + 2d8` will be the same as `roll 2d8 + 5`.
+For now you may want to run `roll 4d8 + 5` instead.
 
 
 ## Problems, errors and feature requests
