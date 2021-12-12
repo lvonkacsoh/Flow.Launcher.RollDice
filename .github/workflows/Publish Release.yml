@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-    paths-ignore: 
+    paths-ignore:
       - .github/workflows/*
 
 jobs:
@@ -22,23 +22,20 @@ jobs:
       - name: get version
         id: version
         uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: 'plugin.json'
           prop_path: 'Version'
-      - run: echo ${{steps.version.outputs.prop}} 
+      - run: echo ${{steps.version.outputs.prop}}
       - name: Install dependencies
         run: |
-          sudo apt-get install -y gettext
           python -m pip install --upgrade pip
           pip install -r ./requirements.txt -t ./lib
-          msgfmt ./plugin/translations/en/LC_MESSAGES/messages.po -o ./plugin/translations/en/LC_MESSAGES/messages.mo
-          msgfmt ./plugin/translations/zh/LC_MESSAGES/messages.po -o ./plugin/translations/zh/LC_MESSAGES/messages.mo
-          zip -r Flow.Launcher.Plugin.GenConvert.zip . -x '*.git*'
+          zip -r Flow.Launcher.Plugin.RollDice.zip . -x '*.git*'
       - name: Publish
-        if: success() && github.ref == 'refs/heads/main'
+        if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: 'Flow.Launcher.Plugin.GenConvert.zip'
+          files: 'Flow.Launcher.Plugin.RollDice.zip'
           tag_name: "v${{steps.version.outputs.prop}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
