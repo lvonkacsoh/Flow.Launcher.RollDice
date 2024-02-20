@@ -1,4 +1,5 @@
 # encoding=utf8
+from itertools import chain
 import re
 import ast
 import operator as op
@@ -6,7 +7,6 @@ from flowlauncher import FlowLauncher
 from dice_rolling.utils.argument_parser import ParsingResult
 from dice_rolling import RollBuilder
 from fortunes import rnd_fortune
-from itertools import chain
 
 
 def filter_non_valids(text: str) -> str:
@@ -34,6 +34,11 @@ class CustomParsingResult(ParsingResult):
 
 class DiceRequest:
     # see also: https://github.com/Ajordat/dice_rolling
+
+    TXT_TITLE_BASE_REP = "#{:02d} | {}"
+    TXT_TITLE_BASE = "{} evaluated to {}"
+    TXT_SUB_BASE = "Results: {}"
+    TXT_SUB_DISC = ", discarded {}"
 
     GROUP_REQUEST = 0
     GROUP_REPETITIONS = 1
@@ -63,7 +68,7 @@ class DiceRequest:
             b.addition_to_roll(self.request.addition)
             b.keep_n(self.request.keep)
             b.build()
-            r.append(b.get_full_result())
+            r.append(b.get_full_result())  # Tuple[int, list, list]
 
         self.rolls = r
         self.total_sum = sum([result[0] for result in r])
@@ -71,19 +76,50 @@ class DiceRequest:
         self.total_discarded = [
             discarded for result in r for discarded in result[2] if result[2]]
 
+    def __generate_message_title(self, title=None) -> str:
+        if title is None:
+            return self.TXT_TITLE_BASE.format(
+                self.request.full_request,
+                self.total_sum
+            )
+        return title
+
+    def __generate_message_subtitle(self, results: list, discarded: list, base=TXT_SUB_BASE, addition=TXT_SUB_DISC) -> str:
+        subtitle = base.format(results)
+        if len(discarded) > 0:
+            subtitle = subtitle + addition.format(discarded)
+        return subtitle
+
     def total_to_messageDTO(self) -> MessageDTO:
-        title = "{} evaluated to {}".format(
-            self.request.full_request, self.total_sum)
-        subtitle = "Results: {}".format(
-            list(chain.from_iterable([result[1] for result in self.rolls])))  # list flattening
-        return MessageDTO(title, subtitle)
+        def flatten(lst: list):
+            return list(chain.from_iterable(lst))
+
+        results = []
+        discarded = []
+        if len(self.rolls) > 1:
+            results = [roll[0] for roll in self.rolls]
+        else:
+            results = flatten([roll[1] for roll in self.rolls])
+            discarded = flatten([roll[2] for roll in self.rolls if roll[2]])
+
+        return MessageDTO(
+            self.__generate_message_title(),
+            self.__generate_message_subtitle(results, discarded)
+        )
 
     def rolls_to_messageDTO(self) -> list[MessageDTO]:
-        return [MessageDTO(
-            title="> throw {}: {}".format(str(i+1), result[0]),
-            subtitle="kept {}{}".format(result[1], ", discarded {}".format(
-                result[2]) if len(result) > 2 else "")
-        ) for i, result in enumerate(self.rolls)]
+        messages = []
+        for i, roll in enumerate(self.rolls):
+            custom_base_title = self.TXT_TITLE_BASE_REP.format(
+                i+1,
+                roll[0]
+            )
+            discarded = roll[2] if len(roll) > 2 else []
+            messages.append(MessageDTO(
+                self.__generate_message_title(custom_base_title),
+                self.__generate_message_subtitle(roll[1], discarded)
+            ))
+        return messages
 
     def __parse_repititions(self, command: re.Match):
         if command.group(self.GROUP_REPETITIONS):
@@ -160,8 +196,11 @@ class SaferEvaluator:
 class RollDice(FlowLauncher):
     messages = []
 
-    def addMessage(self, message: MessageDTO):
-        self.messages.append(message.as_flow_message())
+    def addMessage(self, message: MessageDTO, isPriority=False):
+        if isPriority:
+            self.messages.insert(0, message.as_flow_message())
+        else:
+            self.messages.append(message.as_flow_message())
 
     def resolve_dice_commands(self, line: str):
         pattern = r'((\d+)x)?(\d*)d(\d+|F)(?:(\+|\-)(\d+))?(k(h|l)\d+)?'
@@ -189,14 +228,14 @@ class RollDice(FlowLauncher):
                 "Total result: {}".format(total_result)).as_flow_message())
         except ValueError:
             title = "Error: Are your arithmetics okay?"
-            self.addMessage(MessageDTO(title))
+            self.addMessage(MessageDTO(title), True)
         except TypeError:
             title = "Error: Are you sure, that your dices are alright?"
-            self.addMessage(MessageDTO(title))
+            self.addMessage(MessageDTO(title), True)
         except Exception:
-            title = "CRITICAL ERROR: please open a GitHub issue!"
-            subtitle = "Don't forget to add the query: " + arguments
-            self.addMessage(MessageDTO(title, subtitle))
+            title = "Warning: There's an issue with evaluating your expression"
+            subtitle = "If this issue persists, please open a github issue."
+            self.addMessage(MessageDTO(title, subtitle), True)
 
     def query(self, arguments: str) -> list:
         if len(arguments) == 0:

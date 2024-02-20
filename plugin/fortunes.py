@@ -1,6 +1,6 @@
 
 import os
-from random import choice as select_randomly
+from random import choice
 
 hints = [
     "Roll at disadvantage with 2d20kl1",
@@ -78,4 +78,4 @@ fortunes = [
 ]
 
 
-def rnd_fortune(): return select_randomly(hints+fortunes)
+def rnd_fortune(): return choice(hints+fortunes)
