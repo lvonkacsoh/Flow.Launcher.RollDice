@@ -141,8 +141,7 @@ class SaferEvaluator:
 
     # supported operators
     operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
-                 ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
-                 ast.USub: op.neg}
+                 ast.Div: op.truediv}
 
     def eval_expr(self, expr):
         return self.eval_(ast.parse(expr, mode='eval').body)

@@ -1,15 +1,16 @@
 # RollDice (Flow.Launcher.Plugin.RollDice)
 
-A quick way to roll some dices.
+A quick way to roll some dice.
 
-![screenshot](assets/RollDice_screenshot.jpg)
+![screenshot 1](assets/RollDice_screenshot-1.JPG)
+![screenshot 2](assets/RollDice_screenshot-2.JPG)
 
 ## About
 
-Rolls the given dices, sums the results and evaluates the equation.
+Rolls the given dice, sums the results and evaluates the equation.
 The details of each roll are listed below the result.
 
-In update pre-2.0 I added some fun messages based on the linux fortune package because I felt like it.
+As part of the 2.0 rework I added some fun messages based on the linux fortune package because I felt like it.
 
 ## Requirements
 
@@ -40,22 +41,20 @@ The easiest way to install them, is to open a CLI like Powershell, navigate into
 
 ## Usage
 
-As of version pre-2.0 you can do stuff like this:`6x4d6kh3 + 5`.
+As of version 2.0 you can do stuff like this: `6x4d6kh3 + 5`.
 I highly recommend to check this awesome package out: [dice-rolling](https://github.com/Ajordat/dice_rolling).
 
 | Command |Example | Description |
 | --- | --- | --- |
-| `roll {dices}` | `roll 1d20` | Rolls an amount of dices with the given sides and sums up the result |
-| `roll {repititions}x{dices}` | `roll 6x1d20` | Repeats the throw n times |
-| `roll {dices}{addition}` | `roll 4d6+3` | adds three to the throw result (this is not part of my arithmetics) |
-| `roll {dices}{keep}` | `roll 4d6kh3` | Keeps the highest three of four throws, see [here](https://github.com/Ajordat/dice_rolling) for more |
-| `roll {repititions}x{dices}{addition}{keep}{arithmetics}` | `roll 4d6+3kh3 + 5` | Does all of the above and adds 5 to the throw |
-
-Currently there are some jank elements to this.
-For example, the arithmetics solver still has some bugs if you want to do smth like `1d4 + 4d6` or `1d4 + 5 * 3`.
-I'll address this in the full 2.0 release.
-
+| `roll {dice}` | `roll 1d20` | Rolls an amount of dice with the given sides and sums up the result |
+| `roll {fate diece}` | `roll 4dF` | Rolls four times within the range [-1, 0, 1]. *This works as any other die and may be combined with any of the rows below.* |
+| `roll {repititions}x{dice}` | `roll 6x1d20` | Repeats the throw n times and lists each result seperatly. |
+| `roll {dice}{addition}` | `roll 4d6+3` | adds three to the throw result (this is not part of my arithmetics). |
+| `roll {dice}{keep}` | `roll 4d6kh3` | Keeps the highest three of four throws. |
+| `roll {dice}{keep}{addition}` | `roll 4d6kh3+2` | Keeps the highest three of four throws and adds two to the total result. |
+| `roll {dice}{addition}{keep}` | `roll 4d6+2kh3` | Adds the +2 to the 4d6 rolls and then discards the lowest roll. |
+| `roll {any roll} {basic arithmetics}` | `roll 4dF+3kh3 /3` | Does all of the above and then applies given arithmetics. Math! *Note: supported operations are limited to (`mult, div, plus, minus`) due to system safety.* |
 
 ## Problems, errors and feature requests
 
-Open an issue in this repo.
+Open an issue in this repo and add as much info as possible.
