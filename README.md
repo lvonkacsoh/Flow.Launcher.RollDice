@@ -1,37 +1,35 @@
 # RollDice (Flow.Launcher.Plugin.RollDice)
 
-A quick way to roll some dices.
+A quick way to roll some dice.
 
-![screenshot](assets/RollDice_screenshot.jpg)
-
+![screenshot 1](assets/RollDice_screenshot-1.JPG)
+![screenshot 2](assets/RollDice_screenshot-2.JPG)
 
 ## About
 
-Rolls the given dices, sums the results and evaluates the equation.
+Rolls the given dice, sums the results and evaluates the equation.
 The details of each roll are listed below the result.
 
+As part of the `2.0` rework I added some fun messages based on the linux fortune package because I felt like it.
 
 ## Requirements
 
-To use Python Plugins within Flow you'll need Python 3.5 or later installed on your system.
+To use Python Plugins within Flow you'll need Python v3.10 or later installed on your system.
 You also may need to select your Python installation directory in the Flow Launcher Settings.
 As of v1.8, Flow Launcher should take care of the installation of Python for you if it is not on your system.
 
+## Installing
 
-### Installing
-
-The Plugin has been officially added to the supported list of plugins. 
+The Plugin has been officially added to the supported list of plugins.
 Use `pm install RollDice` to install.
 
 However you can also manually add it.
-
 
 ### Manual
 
 Add the plugins folder to %APPDATA%\Roaming\FlowLauncher\Plugins\ and run the Flow command `restart Flow Launcher`.
 
-
-### Python Package Requirements
+#### Python Package Requirements
 
 This plugin depends on the python `flowlauncher` and `dice-rolling` packages.
 
@@ -41,29 +39,22 @@ The easiest way to install them, is to open a CLI like Powershell, navigate into
 
 `pip install -r requirements.txt`
 
-
 ## Usage
 
-Dices are defined in the pattern `{amount}d{sides}`.
+As of version `2.0` you can do stuff like this: `roll 6x4d6kh3 * 5`.
+I highly recommend to check this awesome package out: [dice-rolling](https://github.com/Ajordat/dice_rolling).
 
-| Command |Example | Description | 
-| --- | --- | --- |
-| `roll {dices}` | `roll 1d20` |Rolls an amount of dices with the given sides and sums up the result |
-| `roll {dices} ({operator} [{number} \| {dices}])*` | `roll 3d8 + 6 * 1d20 - 1d6` | Rolls the dices and calculates the given operation |
-
-You can concatenate as many rolls as you want via the following operators: `+`, `-`, `*`, `/`.
-
-> Don't forget the spaces between the operators and the dices or numbers!
-
-The dice rolls will be replaced with the resulting sums before the total is evaluated.
-Thus `6 * 1d20` will become six times the result of the d20 roll like `6 * 17` which results in `102`.
-To roll a d20 six times simply use `6d20` instead.
-
-Rolling the same dices multiple times will only show the first instance.
-Example: `roll 2d8 + 5 + 2d8` will be the same as `roll 2d8 + 5`.
-For now you may want to run `roll 4d8 + 5` instead.
-
+| row | Command                               | Example            | Description                                                                                                                                                  |
+| --- | ------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `roll {dice}`                         | `roll 1d20`        | Rolls an amount of dice with the given sides and sums up the result                                                                                          |
+| 2   | `roll {fate dice}`                    | `roll 4dF`         | Rolls four times within the range [-1, 0, 1]. *This works as any other die and may be combined with any of the rows below.*                                  |
+| 3   | `roll {repititions}x{dice}`           | `roll 6x1d20`      | Repeats the dice roll six times and lists each result separately. See first screenshot.                                                                      |
+| 4   | `roll {dice}{addition}`               | `roll 4d6+3`       | Adds +3 to each rolled d6. *Please note, that adding a space character before the `+` results in the behaviour described in row 8.*                          |
+| 5   | `roll {dice}{keep}`                   | `roll 4d6kh3`      | Discards the lowest roll by keeping the highest three.                                                                                                       |
+| 6   | `roll {dice}{keep}{addition}`         | `roll 4d6kh3+2`    | Same as row 5 and adds two to the total result.                                                                                                              |
+| 7   | `roll {dice}{addition}{keep}`         | `roll 4d6+2kl2`    | Same as row 4 and then keeps the lowest two rolls.                                                                                                           |
+| 8   | `roll {any roll} {basic arithmetics}` | `roll 4dF+3kh3 /3` | Does all of the above and then applies given arithmetics. Math! *Note: supported operations are limited to (`mult, div, plus, minus`) due to system safety.* |
 
 ## Problems, errors and feature requests
 
-Open an issue in this repo.
+Open an issue in this repo and add as much info as possible.
